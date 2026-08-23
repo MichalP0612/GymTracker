@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="backend/GymTracker.Api/GymTracker.Api.csproj" />
+  </Folder>
+</Solution>
