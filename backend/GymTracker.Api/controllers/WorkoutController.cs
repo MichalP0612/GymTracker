@@ -3,6 +3,7 @@ using GymTracker.Api.model;
 using GymTracker.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using GymTracker.Api.DTOs;
 
 namespace GymTracker.Api.Controllers;
 
@@ -38,10 +39,49 @@ public class WorkoutController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Workout>> CreateWorkout(Workout workout)
+    public async Task<ActionResult<Workout>> CreateWorkout(CreateWorkoutDto workout)
     {
-        var createdWorkout = await _workoutService.CreateWorkoutAsync(workout);
+        try
+        {
+            var createdWorkout = await _workoutService.CreateWorkoutAsync(workout);
+            return CreatedAtAction(nameof(GetWorkout), new {id = createdWorkout.ID}, createdWorkout);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 
-        return CreatedAtAction(nameof(GetWorkout), new {id = createdWorkout.ID}, createdWorkout);
+    [HttpPut("{id}")]
+    public async Task<ActionResult<Workout>> UpdateWorkout(int id, UpdateWorkoutDto workout) 
+    {
+        try 
+        {
+            var updatedWorkout = await _workoutService.UpdateWorkoutAsync(id, workout);
+
+            if (updatedWorkout == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updatedWorkout);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteWorkout(int id)
+    {
+        var deleted = await _workoutService.DeleteWorkoutAsync(id);
+
+        if (!deleted)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
     }
 }

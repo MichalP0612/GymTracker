@@ -3,6 +3,7 @@ using GymTracker.Api.model;
 using GymTracker.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using GymTracker.Api.DTOs;
 
 namespace GymTracker.Api.Controllers;
 
@@ -24,7 +25,7 @@ public class ExercisesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Exercise>> CreateExercise(Exercise exercise)
+    public async Task<ActionResult<Exercise>> CreateExercise(CreateExerciseDto exercise)
     {
         var createdExercise = await _exerciseService.CreateExerciseAsync(exercise);
 
