@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using GymTracker.Api.enums;
 
 namespace GymTracker.Api.DTOs;
 
@@ -9,6 +10,8 @@ public class CreateWorkoutSetDto
 
     [Range (0.00, 1000)]
     public decimal Weight { get; set; }
+
+    public WeightUnit Unit { get; set;  }
 
     [Range (0, 50)]
     public int Reps { get; set; }

@@ -30,13 +30,14 @@ public class WorkoutService : IWorkoutService
                     ExerciseId = s.ExerciseID,
                     ExerciseName = s.Exercise!.Name,
                     Weight = s.Weight,
+                    Unit = s.Unit,
                     Reps = s.Reps,
                     Rpe = s.Rpe
                 }).ToList()
             }).ToListAsync();
     }
 
-    public async Task <WorkoutResponseDto?> GeyWorkoutByIdAsync(int ID)
+    public async Task <WorkoutResponseDto?> GetWorkoutByIdAsync(int ID)
     {
         return await _context.Workouts
             .Include(w => w.Sets)
@@ -52,6 +53,7 @@ public class WorkoutService : IWorkoutService
                     ExerciseId = s.ExerciseID,
                     ExerciseName = s.Exercise!.Name,
                     Weight = s.Weight,
+                    Unit= s.Unit,
                     Reps = s.Reps,
                     Rpe = s.Rpe
                 }).ToList()
@@ -79,6 +81,7 @@ public class WorkoutService : IWorkoutService
             {
                 ExerciseId = setDto.ExerciseId,
                 Weight = setDto.Weight,
+                Unit = setDto.Unit,
                 Reps = setDto.Reps,
                 Rpe = setDto.Rpe
             });
@@ -123,6 +126,7 @@ public class WorkoutService : IWorkoutService
             {
                 ExerciseID = setDto.ExerciseId,
                 Weight = setDto.Weight,
+                Unit = setDto.Unit,
                 Reps = setDto.Reps,
                 Rpe = setDto.Rpe
             });

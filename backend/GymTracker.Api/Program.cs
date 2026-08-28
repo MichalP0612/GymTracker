@@ -10,6 +10,8 @@ builder.Services.AddScoped<IExerciseService, ExerciseService>();
 
 builder.Services.AddScoped<IWorkoutService, WorkoutService>();
 
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
