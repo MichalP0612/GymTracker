@@ -1,5 +1,6 @@
 using GymTracker.Api.Data;
 using GymTracker.Api.model;
+using GymTracker.Api.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymTracker.Api.Services;
@@ -18,12 +19,19 @@ public class ExerciseService : IExerciseService
         return await _context.Exercises.ToListAsync();
     }
 
-    public async Task<Exercise> CreateExerciseAsync(Exercise exercise)
+    public async Task<Exercise> CreateExerciseAsync(CreateExerciseDto exercise)
     {
-        _context.Exercises.Add(exercise);
+
+        var newExercise = new Exercise
+        {
+            Name = exercise.Name,
+            MuscleGroup = exercise.MuscleGroup,
+        };
+
+        _context.Exercises.Add(newExercise);
 
         await _context.SaveChangesAsync();
 
-        return exercise;
+        return newExercise;
     }
 }

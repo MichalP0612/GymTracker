@@ -5,4 +5,6 @@ namespace GymTracker.Api.Services;
 public interface IStatisticsService
 {
     Task<StatisticsResponseDto> GetStatisticsAsync();
+
+    Task<ExerciseStatisticsDto> GetExerciseStatisticsAsync(int exerciseId);
 }

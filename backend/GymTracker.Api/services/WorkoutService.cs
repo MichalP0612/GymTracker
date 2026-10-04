@@ -60,7 +60,7 @@ public class WorkoutService : IWorkoutService
             }).FirstOrDefaultAsync();
     }
 
-    public async Task <Workout> CreateWorkoutAsync(CreateWorkoutDto dto)
+    public async Task <WorkoutResponseDto> CreateWorkoutAsync(CreateWorkoutDto dto)
     {
         var workout = new Workout
         {
@@ -70,16 +70,16 @@ public class WorkoutService : IWorkoutService
 
         foreach (var setDto in dto.Sets)
         {
-            var exerciseExists = await _context.Exercises.AnyAsync(e => e.ID == setDto.ExerciseId);
+            var exerciseExists = await _context.Exercises.AnyAsync(e => e.ID == setDto.ExerciseID);
 
             if (!exerciseExists)
             {
-                throw new ArgumentException($"Exercise with ID {setDto.ExerciseId} does not exist.");
+                throw new ArgumentException($"Exercise with ID {setDto.ExerciseID} does not exist.");
             }
 
-            workout.Sets.Add(new WorkoutSet)
+            workout.Sets.Add(new WorkoutSet
             {
-                ExerciseId = setDto.ExerciseId,
+                ExerciseID = setDto.ExerciseID,
                 Weight = setDto.Weight,
                 Unit = setDto.Unit,
                 Reps = setDto.Reps,
@@ -91,12 +91,31 @@ public class WorkoutService : IWorkoutService
 
         await _context.SaveChangesAsync();
 
-        return workout;
+        return await _context.Workouts
+            .Include(w => w.Sets)
+            .ThenInclude(s => s.Exercise)
+            .Where(w => w.ID == workout.ID)
+            .Select(w => new WorkoutResponseDto
+            {
+                Id = w.ID,
+                Name = w.Name,
+                Date = w.Date,
+                Set = w.Sets.Select(s => new WorkoutSetResponseDto
+                {
+                    Id = s.ID,
+                    ExerciseId = s.ExerciseID,
+                    ExerciseName = s.Exercise!.Name,
+                    Weight = s.Weight,
+                    Unit = s.Unit,
+                    Reps = s.Reps,
+                    Rpe = s.Rpe
+                }).ToList()
+            }).FirstAsync();
     }
 
     public async Task <Workout> UpdateWorkoutAsync(int id, UpdateWorkoutDto dto) 
     {
-        var workout = await _context.Workouts.include(w => w.Sets).firstOrDefaultAsync(w => w.ID == id);
+        var workout = await _context.Workouts.Include(w => w.Sets).FirstOrDefaultAsync(w => w.ID == id);
 
         if (workout == null)
         {
@@ -105,11 +124,11 @@ public class WorkoutService : IWorkoutService
 
         foreach (var setDto in dto.Sets)
         {
-            var exerciseExists = await _context.Exercises.AnyAsync(e => e.ID == setDto.ExerciseId);
+            var exerciseExists = await _context.Exercises.AnyAsync(e => e.ID == setDto.ExerciseID);
 
             if (!exerciseExists)
             {
-                throw new ArgumentException($"Exercise with ID {setDto.ExerciseId} does not exist.");
+                throw new ArgumentException($"Exercise with ID {setDto.ExerciseID} does not exist.");
             }
         }
 
@@ -124,7 +143,7 @@ public class WorkoutService : IWorkoutService
         {
             workout.Sets.Add(new WorkoutSet
             {
-                ExerciseID = setDto.ExerciseId,
+                ExerciseID = setDto.ExerciseID,
                 Weight = setDto.Weight,
                 Unit = setDto.Unit,
                 Reps = setDto.Reps,
@@ -139,7 +158,7 @@ public class WorkoutService : IWorkoutService
 
     public async Task<bool> DeleteWorkoutAsync(int id)
     {
-        var workout = _context.Workouts.FirstOrDefaultAsync(w => w.Id == id);
+        var workout = await _context.Workouts.FirstOrDefaultAsync(w => w.ID == id);
 
         if (workout == null)
         {

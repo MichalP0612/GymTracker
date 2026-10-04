@@ -28,7 +28,7 @@ public class WorkoutController : ControllerBase
     [HttpGet("{id}")]
     public async Task <ActionResult<Workout>> GetWorkout(int id)
     {
-        var workout = await _workoutService.GeyWorkoutByIdAsync(id);
+        var workout = await _workoutService.GetWorkoutByIdAsync(id);
 
         if (workout == null)
         {
@@ -39,12 +39,12 @@ public class WorkoutController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Workout>> CreateWorkout(CreateWorkoutDto workout)
+    public async Task<ActionResult<WorkoutResponseDto>> CreateWorkout(CreateWorkoutDto workout)
     {
         try
         {
             var createdWorkout = await _workoutService.CreateWorkoutAsync(workout);
-            return CreatedAtAction(nameof(GetWorkout), new {id = createdWorkout.ID}, createdWorkout);
+            return CreatedAtAction(nameof(GetWorkout), new {id = createdWorkout.Id}, createdWorkout);
         }
         catch (ArgumentException ex)
         {

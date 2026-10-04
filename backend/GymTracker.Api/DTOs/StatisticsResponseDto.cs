@@ -1,3 +1,6 @@
+using GymTracker.Api.enums;
+using GymTracker.Api.model;
+
 namespace GymTracker.Api.DTOs;
 
 public class StatisticsResponseDto
@@ -13,5 +16,7 @@ public class PersonalRecordDto
     public string ExerciseName { get; set; } = string.Empty;
     public decimal Weight { get; set; }
     public int Reps { get; set; }
+
+    public WeightUnit Unit { get; set; }
     public decimal EstimatedOneRepMax { get; set; }
 }

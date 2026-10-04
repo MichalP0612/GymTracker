@@ -80,6 +80,9 @@ namespace GymTracker.Api.Migrations
                     b.Property<decimal?>("Rpe")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("Unit")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Weight")
                         .HasColumnType("decimal(18,2)");
 
