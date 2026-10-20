@@ -40,8 +40,7 @@ public class WorkoutService : IWorkoutService
     public async Task <WorkoutResponseDto?> GetWorkoutByIdAsync(int ID)
     {
         return await _context.Workouts
-            .Include(w => w.Sets)
-            .ThenInclude(s => s.Exercise)
+            .Where(w => w.ID == ID)
             .Select(w => new WorkoutResponseDto
             {
                 Id = w.ID,
@@ -119,7 +118,7 @@ public class WorkoutService : IWorkoutService
 
         if (workout == null)
         {
-            throw new ArgumentException($"Workout with ID {id} does not exist.");
+            return null;
         }
 
         foreach (var setDto in dto.Sets)
@@ -153,7 +152,7 @@ public class WorkoutService : IWorkoutService
 
         await _context.SaveChangesAsync();
 
-        return workout;
+        return GetWorkoutByIdAsync(id);
     }
 
     public async Task<bool> DeleteWorkoutAsync(int id)
