@@ -1,5 +1,8 @@
 # ignore these folders
 
 .vs/
-backend/GymTracker.Api/bin/
-backend/GymTracker.Api/obj/
+bin/
+obj/
+.DS_Store
+*.user
+.env

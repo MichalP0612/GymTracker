@@ -152,7 +152,7 @@ public class WorkoutService : IWorkoutService
 
         await _context.SaveChangesAsync();
 
-        return GetWorkoutByIdAsync(ID);
+        return await GetWorkoutByIdAsync(id);
     }
 
     public async Task<bool> DeleteWorkoutAsync(int id)
