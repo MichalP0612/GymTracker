@@ -14,7 +14,7 @@ public class WorkoutService : IWorkoutService
         _context = context;
     }
 
-    public async Task <IEnumerable<WorkoutResponseDto>> GetWorkoutAsync()
+    public async Task<IEnumerable<WorkoutResponseDto>> GetWorkoutAsync()
     {
         return await _context.Workouts
             .Include(w => w.Sets)
@@ -37,7 +37,7 @@ public class WorkoutService : IWorkoutService
             }).ToListAsync();
     }
 
-    public async Task <WorkoutResponseDto?> GetWorkoutByIdAsync(int ID)
+    public async Task<WorkoutResponseDto?> GetWorkoutByIdAsync(int ID)
     {
         return await _context.Workouts
             .Where(w => w.ID == ID)
@@ -59,7 +59,7 @@ public class WorkoutService : IWorkoutService
             }).FirstOrDefaultAsync();
     }
 
-    public async Task <WorkoutResponseDto> CreateWorkoutAsync(CreateWorkoutDto dto)
+    public async Task<WorkoutResponseDto> CreateWorkoutAsync(CreateWorkoutDto dto)
     {
         var workout = new Workout
         {
@@ -112,7 +112,7 @@ public class WorkoutService : IWorkoutService
             }).FirstAsync();
     }
 
-    public async Task <Workout> UpdateWorkoutAsync(int id, UpdateWorkoutDto dto) 
+    public async Task<WorkoutResponseDto?> UpdateWorkoutAsync(int id, UpdateWorkoutDto dto) 
     {
         var workout = await _context.Workouts.Include(w => w.Sets).FirstOrDefaultAsync(w => w.ID == id);
 
@@ -152,7 +152,7 @@ public class WorkoutService : IWorkoutService
 
         await _context.SaveChangesAsync();
 
-        return GetWorkoutByIdAsync(id);
+        return GetWorkoutByIdAsync(ID);
     }
 
     public async Task<bool> DeleteWorkoutAsync(int id)
