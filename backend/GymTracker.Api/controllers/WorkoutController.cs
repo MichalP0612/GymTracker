@@ -53,7 +53,7 @@ public class WorkoutController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<Workout>> UpdateWorkout(int id, UpdateWorkoutDto workout) 
+    public async Task<ActionResult<WorkoutResponseDto>> UpdateWorkout(int id, UpdateWorkoutDto workout) 
     {
         try 
         {
