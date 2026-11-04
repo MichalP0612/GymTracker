@@ -2,6 +2,7 @@ using GymTracker.Api.Data;
 using GymTracker.Api.DTOs;
 using GymTracker.Api.model;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace GymTracker.Api.Services;
 
@@ -14,49 +15,38 @@ public class WorkoutService : IWorkoutService
         _context = context;
     }
 
+    private static readonly Expression<Func<Workout, WorkoutResponseDto>> ToResponse = w => new WorkoutResponseDto
+    {
+        Id = w.ID,
+        Name = w.Name,
+        Date = w.Date,
+        Set = w.Sets.Select(s => new WorkoutSetResponseDto
+        {
+            Id = s. ID,
+            ExerciseId = s.ExerciseID,
+            ExerciseName = s.Exercise!.Name,
+            Weight = s.Weight,
+            Unit = s.Unit,
+            Reps = s.Reps,
+            Rpe = s.Rpe
+        }).ToList()
+    };
+
     public async Task<IEnumerable<WorkoutResponseDto>> GetWorkoutAsync()
     {
         return await _context.Workouts
             .Include(w => w.Sets)
             .ThenInclude(s => s.Exercise)
-            .Select(w => new WorkoutResponseDto
-            {
-                Id = w.ID,
-                Name = w.Name,
-                Date = w.Date,
-                Set = w.Sets.Select(s => new WorkoutSetResponseDto
-                {
-                    Id = s.ID,
-                    ExerciseId = s.ExerciseID,
-                    ExerciseName = s.Exercise!.Name,
-                    Weight = s.Weight,
-                    Unit = s.Unit,
-                    Reps = s.Reps,
-                    Rpe = s.Rpe
-                }).ToList()
-            }).ToListAsync();
+            .Select(ToResponse)
+            .ToListAsync();
     }
 
     public async Task<WorkoutResponseDto?> GetWorkoutByIdAsync(int ID)
     {
         return await _context.Workouts
             .Where(w => w.ID == ID)
-            .Select(w => new WorkoutResponseDto
-            {
-                Id = w.ID,
-                Name = w.Name,
-                Date = w.Date,
-                Set = w.Sets.Select(s => new WorkoutSetResponseDto
-                {
-                    Id = s.ID,
-                    ExerciseId = s.ExerciseID,
-                    ExerciseName = s.Exercise!.Name,
-                    Weight = s.Weight,
-                    Unit= s.Unit,
-                    Reps = s.Reps,
-                    Rpe = s.Rpe
-                }).ToList()
-            }).FirstOrDefaultAsync();
+            .Select(ToResponse)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<WorkoutResponseDto> CreateWorkoutAsync(CreateWorkoutDto dto)
@@ -94,22 +84,8 @@ public class WorkoutService : IWorkoutService
             .Include(w => w.Sets)
             .ThenInclude(s => s.Exercise)
             .Where(w => w.ID == workout.ID)
-            .Select(w => new WorkoutResponseDto
-            {
-                Id = w.ID,
-                Name = w.Name,
-                Date = w.Date,
-                Set = w.Sets.Select(s => new WorkoutSetResponseDto
-                {
-                    Id = s.ID,
-                    ExerciseId = s.ExerciseID,
-                    ExerciseName = s.Exercise!.Name,
-                    Weight = s.Weight,
-                    Unit = s.Unit,
-                    Reps = s.Reps,
-                    Rpe = s.Rpe
-                }).ToList()
-            }).FirstAsync();
+            .Select(ToResponse)
+            .FirstAsync();
     }
 
     public async Task<WorkoutResponseDto?> UpdateWorkoutAsync(int id, UpdateWorkoutDto dto) 
