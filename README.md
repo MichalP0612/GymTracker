@@ -19,7 +19,7 @@ into their workouts and individual exercises, with things like workout/exercise 
 
 3. Now in a separate terminal run the following to start React:
 
-    cd into the frontend folder then run: rpm run dev
+    cd into the frontend folder then run: npm run dev
 
 The react frontend runs on port 1573, while the .NET API runs on port 5163. However I have added a CORS policy in Program.cs which allows
 both to have the same origin and be able to run. 
