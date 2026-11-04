@@ -52,7 +52,7 @@ public class StatisticsService : IStatisticsService
         };
     }
 
-    public async Task<ExerciseStatisticsDto> GetExerciseStatisticsAsync(int exerciseId)
+    public async Task<ExerciseStatisticsDto?> GetExerciseStatisticsAsync(int exerciseId)
     {
         var exercise = await _context.Exercises.FirstOrDefaultAsync(e => e.ID == exerciseId);
 

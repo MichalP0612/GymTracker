@@ -4,7 +4,7 @@ services:
     container_name: gymtracker-sqlserver
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "GymTracker123"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in a .env file (see .env.example)}"
     ports:
       - "1433:1433"
     volumes:

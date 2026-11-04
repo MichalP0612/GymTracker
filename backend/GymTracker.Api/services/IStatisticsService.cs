@@ -6,5 +6,5 @@ public interface IStatisticsService
 {
     Task<StatisticsResponseDto> GetStatisticsAsync();
 
-    Task<ExerciseStatisticsDto> GetExerciseStatisticsAsync(int exerciseId);
+    Task<ExerciseStatisticsDto?> GetExerciseStatisticsAsync(int exerciseId);
 }
