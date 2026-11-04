@@ -1,25 +1,55 @@
-This is a full stack exercise tracking application aimed at tracking and recording a users workouts while also offering users statistical insights
-into their workouts and individual exercises, with things like workout/exercise trends, volume lifted, one rep max's on exercise using the Epley Formula which can be found below and many other helpful insights:
+A full-stack exercise tracking application for logging workouts and getting statistical insights into training: total volume lifted, personal records per exercise, per-day progress, and estimated one-rep-max (1RM) using the Epley Formula.
 
 <img width="681" height="146" alt="image" src="https://github.com/user-attachments/assets/1f315435-af10-490f-a908-cd5c44acad4b" />
 
+## Tech Stack:
 
+Backend: C#, ASP.NET Core Web API (controller/service architecture, dependency injection, DTO validation), Entity Framework Core (code-first migrations)
 
-1. To run the application firstly run start up docker then in your terminal run the following command:
+Database: SQL Server 2022 running in Docker
 
-    docker compose up -d
-  
-    check the sql server is running by typing docker ps you should see something like gymtracker-sqlserver and Up next to it
+Frontend: React, Typescript, Vite, Recharts (dashboard is still in progress)
 
-2. To start the .NET API run the following command:
+Here are the API endpoints:
 
-    dotnet run --project backend/GymTracker.Api
+| Method | Route | Description |
+| --- | --- | --- |
+| GET | `/api/exercises` | List exercises |
+| POST | `/api/exercises` | Create an exercise |
+| GET | `/api/workout` | List workouts with their sets |
+| GET | `/api/workout/{id}` | Get a single workout |
+| POST | `/api/workout` | Create a workout with sets |
+| PUT | `/api/workout/{id}` | Update a workout and its sets |
+| DELETE | `/api/workout/{id}` | Delete a workout |
+| GET | `/api/statistics` | Total workouts, total volume (kg) and personal records |
+| GET | `/api/statistics/exercises/{exerciseId}` | Best set, total volume and 1RM progress for one exercise |
 
-    then to check that is running look out for the url like this: Now listening on: http://localhost:5163
+Running locally
 
-3. Now in a separate terminal run the following to start React:
+*Prerequisites: Docker, .NET SDK and Node.js
 
-    cd into the frontend folder then run: npm run dev
+1. Choose a password for the database, Copy '.env.example to '.env and set 'MYSQL_SA_PASSWORD ('.env' is git-ignored).
+   
+2. Start SQL Server: docker compose up -d
 
-The react frontend runs on port 1573, while the .NET API runs on port 5163. However I have added a CORS policy in Program.cs which allows
-both to have the same origin and be able to run. 
+   Run 'docker ps' to check that 'gymtracker-sqlserver' is showing as up
+
+3. Give the API the connection string using the .NET user secrets, no password is commited:
+
+   dotnet user-secrets set "ConnectionStrings:GymTracker" "Server=localhost,1433;Database=GymTrackerDb;User Id=sa;Password=<yourpassword>;TrustServerCertificate=True;"
+   --project backend/GymTracker.Api
+
+4. Apply the migrations and start the API
+
+   dotnet ef database update --project backend/GymTracker.Api
+   dotnet run --project backend/GymTracker.Api
+
+The API listens on 'http://localhost:5163'
+
+5. Start the React app in a second terminal
+
+   cd frontend
+   npm install
+   npm run dev
+
+The frontend runs on 'http://localhost:5173'. A CORS policy in Program.cs allows it to call the API on port 5163.
