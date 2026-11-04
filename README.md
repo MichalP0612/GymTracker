@@ -24,7 +24,7 @@ Here are the API endpoints:
 | GET | `/api/statistics` | Total workouts, total volume (kg) and personal records |
 | GET | `/api/statistics/exercises/{exerciseId}` | Best set, total volume and 1RM progress for one exercise |
 
-Running locally
+## Running locally:
 
 *Prerequisites: Docker, .NET SDK and Node.js
 
