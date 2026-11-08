@@ -47,3 +47,33 @@ export async function getStatistics(): Promise<Statistics>
 
         return response.json();
 }
+
+export interface ExerciseProgress 
+{
+    date: string;
+    estimatedOneRepMax: number;
+}
+
+export interface ExerciseStatistics 
+{
+    exerciseId: number;
+    exerciseName: string;
+    bestWeight: number;
+    bestWeightUnit: "Kilograms" | "Pounds";
+    bestWeightReps: number;
+    bestEstimatedOneRepMax: number;
+    totalVolume: number;
+    progress: ExerciseProgress[];
+}
+
+export async function getExerciseStatistics(exerciseId: number): Promise<ExerciseStatistics> 
+{
+    const response = await fetch(`${API_URL}/statistics/exercises/${exerciseId}`);
+
+    if (!response.ok)
+        {
+            throw new Error("Failed to fetch exercise statistics");
+        }
+    return response.json();
+
+}

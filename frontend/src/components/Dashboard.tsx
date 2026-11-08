@@ -1,26 +1,110 @@
 import {useEffect, useState} from "react";
-import {getStatistics, type Statistics} from "../services/api";
+import
+{
+    getExercises,
+    getStatistics,
+    getExerciseStatistics,
+    type Exercise,
+    type Statistics,
+    type ExerciseStatistics,
+} from "../services/api";
+
+import ProgressChart from "./ProgressChart";
 
 function Dashboard() {
     const [statistics, setStatistics] = useState<Statistics | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [exercises, setExercises] = useState<Exercise[]>([]);
+    const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(null);
+    const [exerciseStatistics, setExerciseStatistics] = useState<ExerciseStatistics | null>(null);
 
+    const [loading, setLoading] = useState(true);
+    const [exerciseLoading, setExerciseLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [exerciseError, setExerciseError] = useState<string | null>(null);
+
+    // Loads general dashboard data
     useEffect(() => {
-        async function loadStatistics() {
+        let cancelled = false;
+        async function loadDashboard() {
             try {
-                const data = await getStatistics();
-                setStatistics(data);
+                const [statisticsData, exercisesData] = await Promise.all([
+                    getStatistics(),
+                    getExercises()
+                ]);
+
+                if (cancelled) return;
+
+                setStatistics(statisticsData);
+                setExercises(exercisesData);
+
+                if (exercisesData.length > 0) 
+                    {
+                        setSelectedExerciseId(exercisesData[0].id);
+                    }
             }
             catch {
-                setError("Failed to load statistics");
+                if (!cancelled) {
+                    setError("Failed to load dashboard");
+                }
             }
             finally {
-                setLoading(false);
+                if (!cancelled) 
+                    {
+                        setLoading(false);
+                    }
             }
         }
-        loadStatistics();
+        loadDashboard();
+        return () => 
+            {
+                cancelled = true;
+            };
     }, []);
+
+    useEffect(() => 
+        {
+            if (selectedExerciseId === null) 
+                {
+                    setExerciseStatistics(null);
+                    return;
+                }
+
+                const exerciseId = selectedExerciseId;
+            
+                let cancelled = false;
+                async function loadExerciseStatistics() 
+                {
+                    try
+                    {
+                        setExerciseLoading(true);
+                        setExerciseError(null);
+                        setExerciseStatistics(null);
+
+                        const data = await getExerciseStatistics(exerciseId);
+
+                        if (!cancelled) 
+                            {
+                                setExerciseStatistics(data);
+                            }
+                    } catch {
+                        if (!cancelled) 
+                            {
+                                setExerciseError("Failed to load exercise statistics");
+                            }
+                    } finally {
+                        if (!cancelled)
+                            {
+                                setExerciseLoading(false);
+                            }
+                    }
+                }
+                loadExerciseStatistics();
+
+                return () => 
+                    {
+                        cancelled = true;
+                    };
+        }, [selectedExerciseId]);
 
     if (loading) {
         return <p>Loading dashboard...</p>
@@ -30,37 +114,78 @@ function Dashboard() {
         return <p>{error}</p>;
     }
 
-    if (!statistics) {
-        return <p>No statistics available</p>;
-    }
-
     return (
         <div>
             <h1>Gym Tracker</h1>
 
-            <div>
-                <h2>Total Workouts</h2>
-                <p>{statistics.totalWorkouts}</p>
-            </div>
+            {statistics && (
+                <div>
+                    <h2>Overview</h2>
+                    <p>Total Workouts: {statistics.totalWorkouts}</p>
+                    <p> Total Volume: {statistics.totalVolume} kg</p>
 
-            <div>
-                <h2>Total Volume</h2>
-                <p>{statistics.totalVolume} kg</p>
-            </div>
+                    <h2>Personal Records</h2>
+                    {exerciseStatistics && (
+                        <>
+                            <h3>{exerciseStatistics.exerciseName}</h3>
 
-            <h2>Personal Records</h2>
+                            {exerciseStatistics.progress.length > 0 ? (
+                                <>
+                                    <p>
+                                        Best set: {exerciseStatistics.bestWeight}
+                                        {" "}
+                                        {exerciseStatistics.bestWeightUnit}
+                                        {" x "}
+                                        {exerciseStatistics.bestWeightReps}
+                                    </p>
 
-            <ul>
-                {statistics.personalRecords.map((pr) => (
-                    <li key={pr.exerciseId}>
-                        {pr.exerciseName} - {pr.weight} {pr.unit}
-                        {" x "}
-                        {pr.reps}
-                        {" | Estimated 1RM: "}
-                        {pr.estimatedOneRepMax} kg
-                    </li>
+                                    <p>
+                                        Estimated 1RM:{" "}
+                                        {exerciseStatistics.bestEstimatedOneRepMax.toFixed(2)} kg
+                                    </p>
+
+                                    <p>
+                                        Total Volume: {exerciseStatistics.totalVolume.toFixed(2)} kg
+                                    </p>
+                                </>
+                            ) : (
+                                <p>No personal records recorded yet.</p>
+                            )}
+                        </>
+                    )}
+                </div>
+            )}
+
+            <h2>Exercise Progress</h2>
+            <select
+                value={selectedExerciseId ?? ""}
+                onChange={(event) => {
+                    const id = Number(event.target.value);
+                    setSelectedExerciseId(id);
+                }}
+            >
+                <option value="" disabled>Select an exercise</option>
+
+                {exercises.map((exercise) => (
+                    <option key={exercise.id} value={exercise.id}>{exercise.name}</option>
                 ))}
-            </ul>
+            </select>
+
+            {exerciseLoading && <p>Loading progress...</p>}
+
+            {exerciseError && <p>{exerciseError}</p>}
+
+            {exerciseStatistics && (
+                <>
+                    <h3>{exerciseStatistics.exerciseName}</h3>
+
+                    {exerciseStatistics.progress.length > 0 ? (
+                        <ProgressChart data={exerciseStatistics.progress}/>
+                    ) : (
+                        <p>No workout history for this exercise yet.</p>
+                    )}
+                </>
+            )}
         </div>
     )
 }
