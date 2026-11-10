@@ -28,7 +28,7 @@ Here are the API endpoints:
 
 *Prerequisites: Docker, .NET SDK and Node.js
 
-1. Choose a password for the database, Copy '.env.example to '.env and set 'MYSQL_SA_PASSWORD ('.env' is git-ignored).
+1. Choose a password for the database, Copy '.env.example to '.env and set 'MSSQL_SA_PASSWORD ('.env' is git-ignored).
    
 2. Start SQL Server: docker compose up -d
 
