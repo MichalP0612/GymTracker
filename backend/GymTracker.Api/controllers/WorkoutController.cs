@@ -20,13 +20,13 @@ public class WorkoutController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Workout>>> GetWorkout()
+    public async Task<ActionResult<IEnumerable<WorkoutResponseDto>>> GetWorkout()
     {
         return Ok(await _workoutService.GetWorkoutAsync());
     }
 
     [HttpGet("{id}")]
-    public async Task <ActionResult<Workout>> GetWorkout(int id)
+    public async Task <ActionResult<WorkoutResponseDto>> GetWorkout(int id)
     {
         var workout = await _workoutService.GetWorkoutByIdAsync(id);
 

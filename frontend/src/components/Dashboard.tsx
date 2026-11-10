@@ -156,6 +156,32 @@ function Dashboard() {
                 </div>
             )}
 
+            <h2>Personal Records</h2>
+            {statistics.personalRecords.length > 0 ? ( 
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Exercise</th>
+                            <th>Best set</th>
+                            <th>Est. 1RM (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {statistics.personalRecords.map((record) => (
+                            <tr key={record.exerciseId}>
+                                <td>{record.exerciseName}</td>
+                                <td>
+                                    {record.weight} {record.unit === "Kilograms" ? "kg" : "lb"} x {record.reps}
+                                </td>
+                                <td>{record.estimatedOneRepMax.toFixed(2)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ) : (
+                <p>No personal records recorded yet.</p>
+            )}
+
             <h2>Exercise Progress</h2>
             <select
                 value={selectedExerciseId ?? ""}
@@ -180,7 +206,17 @@ function Dashboard() {
                     <h3>{exerciseStatistics.exerciseName}</h3>
 
                     {exerciseStatistics.progress.length > 0 ? (
-                        <ProgressChart data={exerciseStatistics.progress}/>
+                        <>
+                            <p>
+                                Best set: {exerciseStatistics.bestWeight}{" "}
+                                {exerciseStatistics.bestWeightUnit === "Kilograms" ? "kg" : "lb"}
+                                {" x "}{exerciseStatistics.bestWeightReps}
+                            </p>
+                            <p>Estimated 1RM: {exerciseStatistics.bestEstimatedOneRepMax.toFixed(2)} kg</p>
+                            <p>Total Volume: {exerciseStatistics.totalVolume.toFixed(2)} kg</p>
+
+                            <ProgressChart data={exerciseStatistics.progress}/>
+                        </>
                     ) : (
                         <p>No workout history for this exercise yet.</p>
                     )}

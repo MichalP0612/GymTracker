@@ -8,7 +8,7 @@ public class UpdateWorkoutDto
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    public DateTime Date { get; set; }
+    public DateTime? Date { get; set; }
 
     [Required]
     [MinLength(1)]

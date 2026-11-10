@@ -9,7 +9,7 @@ builder.Services.AddDbContext<GymTrackerDbContext>(options => options.UseSqlServ
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
 });
 
 builder.Services.AddCors(options =>

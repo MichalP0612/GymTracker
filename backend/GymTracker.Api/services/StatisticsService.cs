@@ -15,6 +15,8 @@ public class StatisticsService : IStatisticsService
         _weightConverterService = weightConverterService;
     }
 
+    private static decimal EstimatedOneRepMax(decimal weightKg, int reps) => reps <= 1 ? weightKg : weightKg * (1 + reps / 30m);
+
     public async Task<StatisticsResponseDto> GetStatisticsAsync()
     {
         // Count workouts
@@ -29,9 +31,9 @@ public class StatisticsService : IStatisticsService
         {
             var bestSetResult = group
             .Select(s => new{Set = s, WeightInKg = _weightConverterService.ToKilos(s.Weight, s.Unit)})
-            .OrderByDescending(x => x.WeightInKg * (1 + x.Set.Reps / 30m)).First();
+            .OrderByDescending(x => EstimatedOneRepMax(x.WeightInKg, x.Set.Reps)).First();
 
-            var estimatedOneRepMax = bestSetResult.WeightInKg * (1 + bestSetResult.Set.Reps / 30m);
+            var estimatedOneRepMax = EstimatedOneRepMax(bestSetResult.WeightInKg, bestSetResult.Set.Reps);
 
             return new PersonalRecordDto
             {
@@ -77,9 +79,9 @@ public class StatisticsService : IStatisticsService
 
         var setsWithKg = sets.Select(s => new { Set = s, WeightInKg = _weightConverterService.ToKilos(s.Weight, s.Unit)}).ToList();
 
-        var bestSet = setsWithKg.OrderByDescending(x => x.WeightInKg * (1 + x.Set.Reps / 30m)).First();
+        var bestSet = setsWithKg.OrderByDescending(x => EstimatedOneRepMax(x.WeightInKg, x.Set.Reps)).First();
 
-        var bestEstimatedOneRepMax = bestSet.WeightInKg * (1 + bestSet.Set.Reps / 30m);
+        var bestEstimatedOneRepMax = EstimatedOneRepMax(bestSet.WeightInKg, bestSet.Set.Reps);
 
         var totalVolume = Math.Round(setsWithKg.Sum(x => x.WeightInKg * x.Set.Reps), 2);
 
@@ -87,9 +89,9 @@ public class StatisticsService : IStatisticsService
             .GroupBy(x => x.Set.Workout!.Date.Date)
             .Select(group =>
             {
-                var bestDailySet = group.OrderByDescending(x => x.WeightInKg * (1 + x.Set.Reps / 30m)).First();
+                var bestDailySet = group.OrderByDescending(x => EstimatedOneRepMax(x.WeightInKg, x.Set.Reps)).First();
 
-                var estimatedOneRepMax = bestDailySet.WeightInKg * (1 + bestDailySet.Set.Reps / 30m);
+                var estimatedOneRepMax = EstimatedOneRepMax(bestDailySet.WeightInKg, bestDailySet.Set.Reps);
 
                 return new ExerciseProgressDto
                 {
